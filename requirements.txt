@@ -1,0 +1,6 @@
+langchain-groq
+python-dotenv
+ccxt
+pandas
+TA-Lib
+numpy
