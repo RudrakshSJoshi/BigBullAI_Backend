@@ -1,4 +1,4 @@
-from custom_jsonifier import extract_json_from_string
+from Tools.custom_jsonifier import extract_json_from_string
 from langchain_groq import ChatGroq
 import os
 
@@ -31,7 +31,7 @@ The user is interacting with an AI system that automates cryptocurrency-related 
 
 #### 1. Investment Query:
 ```json
-{{"category": "investment", "amount": (number, floating or integer, if mentioned otherwise "NIL"), "profit": (number or -1 if margin is infinite or NIL if unspecified), "loss": (number or -1 if margin is infinite or NIL if unspecified), "profit_margins": "%" or "USD" or "NIL" if profit is -1 or unspecified, "loss_margins": "%" or "USD" "NIL" if loss is -1 or unspecified}}
+{{"category": "investment", "amount": (number, floating or integer, if mentioned otherwise "NIL"), "profit": ((number) or (-1 if margin is infinite) or (NIL if unspecified)), "loss": ((number) or (-1 if margin is infinite) or (NIL if unspecified)), "profit_margins": "%" or "USD" or "NIL" if profit is -1 or unspecified, "loss_margins": "%" or "USD" "NIL" if loss is -1 or unspecified}}
 ```
 
 **Examples:**
@@ -41,8 +41,8 @@ The user is interacting with an AI system that automates cryptocurrency-related 
   **Output:** `{{"category": "investment", "amount": 5000, "profit": 10, "loss": -1, "profit_margins": "%", "loss_margins": "NIL"}}`
 - **Input:** "Trading with 10000 USD, infinite profit expected, max loss 500 USD."
   **Output:** `{{"category": "investment", "amount": 10000, "profit": -1, "loss": 500, "profit_margins": "NIL", "loss_margins": "USD"}}`
-- **Input:** "Trading with 10000 USD"
-  **Output:** `{{"category": "investment", "amount": 10000, "profit": "NIL", "loss": "NIL", "profit_margins": "NIL", "loss_margins": "NIL"}}`
+- **Input:** "I want to invest 1000USD with a profit margin of 2%"
+  **Output:** `{{"category": "investment", "amount": 1000, "profit": 2, "loss": "NIL", "profit_margins": "%", "loss_margins": "NIL"}}`
 
 #### 2. Crypto Deposit/Withdrawal:
 ```json
@@ -89,7 +89,7 @@ Now, classify and extract the relevant data for the following query:
 **Query:** "{query}"
 """
    response = llm.invoke(prompt)
-   return extract_json_from_string(response.content), query
+   return extract_json_from_string(response.content)
 
 
-print(initiate("I want to deposit 1 ETH into my wallet."))
+# print(initiate("I want to deposit 1 ETH into my wallet."))

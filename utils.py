@@ -4,6 +4,9 @@ from Tools.token_value import get_ethereum_price
 from Tools.risk_switch import risk_switcher
 from Tools.final_decision import stop_investment
 from Tools.log_maintain import update_simulation_json
+from Agents.differentiator_agent import initiate
+from Agents.web_scraper_agent import generate_questions
+from Tools.query_json_handler import convert_json_to_list
 
 # Investment logic that continuously updates based on the market
 async def investment_logic(amt, profit, loss, stop_event, websocket):
@@ -49,3 +52,12 @@ async def investment_logic(amt, profit, loss, stop_event, websocket):
         except Exception as e:
             print(f"Error in investment loop: {e}")
             break  # Exit loop on error
+
+async def handle_chat(query):
+    response = initiate(query)
+    category = response.get("category")
+    if category == "web_scrape":
+        queries_json = generate_questions(query)
+        queries = convert_json_to_list(queries_json)
+        
+    return response

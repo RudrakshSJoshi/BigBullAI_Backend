@@ -1,15 +1,11 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Request
+from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import json
+from utils import investment_logic, handle_chat
+from Tools.investment_handler import refine_investment
 
-# Assume these functions are imported from your modules
-from Tools.token_value import get_ethereum_price
-from Tools.risk_switch import risk_switcher
-from Tools.final_decision import stop_investment
-from Tools.log_maintain import update_simulation_json
-
-from utils import investment_logic
 # Initialize the FastAPI app
 app = FastAPI()
 
@@ -22,6 +18,21 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+@app.post("/chat")
+async def chat(request: Request):
+    try:
+        data = await request.json()
+        query = data.get("query")
+        # Call the custom function with the query
+        response = await handle_chat(query)
+        return response
+    except ValueError as e:
+        # Handle specific error and raise HTTPException with 400 status code (Bad Request)
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        # Handle any other unexpected errors and raise HTTPException with 500 status code (Internal Server Error)
+        raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
+
 # WebSocket Endpoint: /inv
 @app.websocket("/inv")
 async def inv(websocket: WebSocket):
@@ -33,8 +44,8 @@ async def inv(websocket: WebSocket):
         init_data = json.loads(init_message)  # Parse JSON
 
         amt = init_data.get("amount", 1000)
-        profit = init_data.get("profit", amt * 1.0005)
-        loss = init_data.get("loss", amt * 0.9995)
+        profit = init_data.get("profit", amt * 1.001)
+        loss = init_data.get("loss", amt * 0.999)
 
         print(amt, profit, loss)
         stop_event = asyncio.Event()
