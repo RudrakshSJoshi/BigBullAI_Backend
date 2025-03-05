@@ -1,12 +1,13 @@
 Simulation log initialized.
 Simulation started.
-Tokens Bought. No profit.
-Tokens Held. Profit: 0.8443842117040095.
-Tokens Held. Profit: 0.0548849737606147.
-Tokens Sold. Profit: -0.04221921058516207.
 Liquidity Held. No profit.
 Liquidity Held. No profit.
+Liquidity Held. No profit.
+Liquidity Held. No profit.
+Liquidity Held. No profit.
+Liquidity Held. No profit.
+Liquidity Held. No profit.
 Tokens Bought. No profit.
-Tokens Held. Profit: 0.22787799866209069.
-Max profit reached: 1001.0849279735415. Liquidating investments.
+Tokens Held. Profit: 0.32475147491306344.
+Max profit reached: 1000.3247514749131. Liquidating investments.
 Exiting The System...

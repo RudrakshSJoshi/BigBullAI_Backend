@@ -13,17 +13,19 @@ def stop_investment():
 
     if max_profit != -1:
         if amount >= max_profit:
-            print("Max profit reached. Liquidating investments.")
+            update = f"Max profit reached of {amount}. Liquidating investments."
+            print(update)
             with open(log_path, "a") as log_file:
                 log_file.write(f"Max profit reached: {amount}. Liquidating investments.\nExiting The System...\n")
-            return True
+            return True, update
 
     if max_loss != -1:
         if amount <= max_loss:
-            print("Max loss reached. Liquidating investments.")
+            update = f"Max loss reached of {amount}. Liquidating investments."
+            print(update)
             with open(log_path, "a") as log_file:
                 log_file.write(f"Max loss reached: {amount}. Liquidating investments.\nExiting The System...\n")
-            return True
+            return True, update
         
-    return False
+    return False, "continue"
           

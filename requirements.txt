@@ -4,3 +4,6 @@ ccxt
 pandas
 TA-Lib
 numpy
+fastapi
+uvicorn
+websockets
