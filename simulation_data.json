@@ -1,8 +1,9 @@
 {
-    "amount": 1000.3247514749131,
-    "held_curr": "tkn",
-    "tkn_val": 2217.8,
-    "eth_equivalent": 0.451043715156873,
-    "max_profit": 1000.1,
-    "max_loss": 999.9
+    "amount": 1000.1502897389947,
+    "init_amt": 1000,
+    "held_curr": "liq",
+    "tkn_val": 2195.13,
+    "eth_equivalent": 0.45562235026581327,
+    "max_profit": 1000.5,
+    "max_loss": 999.5
 }

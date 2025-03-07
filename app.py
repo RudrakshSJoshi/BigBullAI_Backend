@@ -55,7 +55,7 @@ async def inv(websocket: WebSocket):
             message = await websocket.receive_text()
             if message == "stop":
                 print("Received stop command from client.")
-                await websocket.send_text("Stopping Token Investment. Liquidating Assets.")
+                await websocket.send_json({"decision": "Stopping Token Investment. Liquidating Assets."})
                 stop_event.set()
                 break
 

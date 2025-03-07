@@ -7,7 +7,7 @@ import numpy as np
 exchange = ccxt.binance()
 
 # Function to determine buy/sell signal & risk factor
-def fetch_signal_risk(tkn_val):
+def fetch_signal_risk(tkn_val, tkn_name = 'ETH/USDT'):
     symbol = 'EGLD/USDT'
     timeframe = '1s'  # Scalping every 1 second
 

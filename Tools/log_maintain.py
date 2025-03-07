@@ -6,6 +6,7 @@ def update_simulation_json(decision: int, tkn_val: float):
     log_path = "./simulation_log.txt"
     profit = 0
     decision1 = ""
+    decision2 = ""
     try:
         # Read the existing JSON file
         with open(json_path, "r") as file:
@@ -26,6 +27,7 @@ def update_simulation_json(decision: int, tkn_val: float):
         if decision == 1:
             if held_curr == "liq":
                 decision1 = "Liquidity Held. No profit."
+                decision2 = "hold"
                 profit = 0
                 data["eth_equivalent"] = old_amount / tkn_val
                 print("Holding liquidity. No profit.")
@@ -33,6 +35,7 @@ def update_simulation_json(decision: int, tkn_val: float):
                     log_file.write(f"{decision1}\n")
             else:
                 decision1 = f"Tokens Held. Profit: {profit}."
+                decision2 = "hold"
                 data["amount"] += profit
                 print("Holding tokens. Profit added.")
                 with open(log_path, "a") as log_file:
@@ -40,6 +43,7 @@ def update_simulation_json(decision: int, tkn_val: float):
             data["tkn_val"] = tkn_val
         elif decision == 2:
             decision1 = "Tokens Bought. No profit."
+            decision2 = "buy"
             data["held_curr"] = "tkn"
             data["tkn_val"] = tkn_val
             data["eth_equivalent"] = old_amount / tkn_val
@@ -49,6 +53,7 @@ def update_simulation_json(decision: int, tkn_val: float):
                 log_file.write(f"{decision1}\n")
         else:
             decision1 = f"Tokens Sold. Profit: {profit}."
+            decision2 = "sell"
             data["held_curr"] = "liq"
             data["tkn_val"] = tkn_val
             data["amount"] += profit
@@ -60,8 +65,13 @@ def update_simulation_json(decision: int, tkn_val: float):
         with open(json_path, "w") as file:
             json.dump(data, file, indent=4)
 
-        # print("Update successful.")
-        return decision1
+        return {
+        "decision": decision2,
+        "tkn_val": tkn_val,
+        "immediate_profit": profit,
+        "accumulated_profit": data["amount"] - data["init_amt"],
+        "net_returns": data["amount"]
+        }
     
     except Exception as e:
         print(f"Error: {e}")

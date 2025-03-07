@@ -67,6 +67,10 @@ To set up and run this FastAPI application, follow these steps:
     - `%` - Loss margin is percentage-based.
     - `USD` - Loss is in absolute USD value.
     - `NIL` - No loss specified.
+  - `profit/loss`:
+    - `Non-negative number` - indicating a margin (in USD or %)
+    - `-1` - indicating no bounds, infinite allowable profit or loss
+    - `NIL` - not specified
 
 **Response Format 2:**
 ```json
@@ -85,7 +89,10 @@ To set up and run this FastAPI application, follow these steps:
     "bot_answer": "<answer_to_query>"
 }
 ```
+
+**Meanings:**
 - **"web_scrape"** - Indicates a request for cryptocurrency prices, trends, conversions, or market data.
+- **"bot_answer"** - Response generated to user's query/queries.
 
 ---
 

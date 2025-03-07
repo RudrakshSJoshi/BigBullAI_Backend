@@ -22,7 +22,7 @@ def get_electronic_gold_price():
     else:
         return f"Error: {response.status_code}"
     
-
+# print(get_electronic_gold_price())
 # print(get_ethereum_price())
 
 

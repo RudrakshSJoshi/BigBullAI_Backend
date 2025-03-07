@@ -24,6 +24,7 @@ async def investment_logic(amt, profit, loss, stop_event, websocket):
 
     data = {
         "amount": amt,
+        "init_amt": amt,
         "held_curr": "liq",
         "tkn_val": 0,
         "eth_equivalent": 0,
@@ -38,16 +39,16 @@ async def investment_logic(amt, profit, loss, stop_event, websocket):
 
     while not stop_event.is_set():
         try:
-            # tkn_val = get_ethereum_price()
-            tkn_val = get_electronic_gold_price()
+            tkn_val = get_ethereum_price()
+            # tkn_val = get_electronic_gold_price()
             decision = risk_switcher(tkn_val)
             updated_info = update_simulation_json(decision, tkn_val)
-
-            await websocket.send_text(updated_info)
+            await websocket.send_json(updated_info)
+            # await websocket.send_text(updated_info)
             
             stop, message = stop_investment()
             if stop:
-                await websocket.send_text(message)
+                await websocket.send_json(message)
                 await websocket.close()
                 stop_event.set()
                 break
@@ -56,8 +57,6 @@ async def investment_logic(amt, profit, loss, stop_event, websocket):
         except Exception as e:
             print(f"Error in investment loop: {e}")
             break  # Exit loop on error
-
-import threading
 
 async def handle_chat(query):
     response = initiate(query)
