@@ -11,6 +11,18 @@ def get_ethereum_price():
     else:
         return f"Error: {response.status_code}"
     
+def get_electronic_gold_price():
+    """Fetches the latest Ethereum price from Binance API and returns it once."""
+    url = "https://api.binance.com/api/v3/ticker/price?symbol=EGLDUSDT"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        return float(data["price"])
+    else:
+        return f"Error: {response.status_code}"
+    
+
 # print(get_ethereum_price())
 
 

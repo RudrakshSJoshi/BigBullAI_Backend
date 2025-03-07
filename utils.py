@@ -1,12 +1,15 @@
 import json
 import asyncio
-from Tools.token_value import get_ethereum_price
+from Tools.token_value import get_ethereum_price, get_electronic_gold_price
 from Tools.risk_switch import risk_switcher
 from Tools.final_decision import stop_investment
 from Tools.log_maintain import update_simulation_json
 from Agents.differentiator_agent import initiate
 from Agents.web_scraper_agent import generate_questions
+from Agents.web_scrape_answerer import get_answers
 from Tools.query_json_handler import convert_json_to_list
+from Tools.web_scrape_serp import search_internet
+import threading
 
 # Investment logic that continuously updates based on the market
 async def investment_logic(amt, profit, loss, stop_event, websocket):
@@ -35,7 +38,8 @@ async def investment_logic(amt, profit, loss, stop_event, websocket):
 
     while not stop_event.is_set():
         try:
-            tkn_val = get_ethereum_price()
+            # tkn_val = get_ethereum_price()
+            tkn_val = get_electronic_gold_price()
             decision = risk_switcher(tkn_val)
             updated_info = update_simulation_json(decision, tkn_val)
 
@@ -53,11 +57,44 @@ async def investment_logic(amt, profit, loss, stop_event, websocket):
             print(f"Error in investment loop: {e}")
             break  # Exit loop on error
 
+import threading
+
 async def handle_chat(query):
     response = initiate(query)
     category = response.get("category")
+
     if category == "web_scrape":
         queries_json = generate_questions(query)
-        queries = convert_json_to_list(queries_json)
+
+        print("works till now")
+        queries = convert_json_to_list(queries_json)  # Convert JSON string to list safely
+        
+        if not isinstance(queries, list):  # Ensure queries is a list
+            raise ValueError("convert_json_to_list did not return a valid list of queries.")
+        
+        res = [None] * len(queries)  # Pre-allocate list to maintain order
+        print("Also working my man")
+        def fetch_results(idx, q):
+            try:
+                res[idx] = search_internet(q)  # Store results in correct index
+            except Exception as e:
+                res[idx] = f"Error fetching results: {str(e)}"  # Handle errors safely
+        
+        threads = []
+        for i, q in enumerate(queries):
+            thread = threading.Thread(target=fetch_results, args=(i, q))
+            threads.append(thread)
+            thread.start()
+        
+        for thread in threads:
+            thread.join()
+        
+        # Ensure `get_answers` returns a valid JSON-compatible value
+        bot_answer = get_answers(queries, res, query)
+        print("Works here too")
+        if isinstance(bot_answer, dict):  
+            response["bot_answer"] = bot_answer  # Store dictionary directly if valid
+        else:
+            response["bot_answer"] = str(bot_answer)  # Convert to string if needed
         
     return response

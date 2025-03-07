@@ -23,7 +23,10 @@ def extract_json_from_string(response_string):
             json_string = response_string[start_index:end_index].strip()
 
         # Step 4: Parse the extracted JSON string and return
-        return json.loads(json_string)
+        print(json_string)
+        res = json.loads(json_string)
+        print(res)
+        return res
 
     except Exception as e:
         print(response_string)  # Print the input for debugging

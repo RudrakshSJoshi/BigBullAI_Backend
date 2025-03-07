@@ -29,20 +29,20 @@ IMPORTANT POINT: Any deviation from the output format will lead to severe punish
 
 ### Examples:
 #### Example 1:
-**User Query:** "What is the conversion rate of Ethereum to ESDT?"
-**Output:** `{{"queries": ["Ethereum token price in USD", "ESDT token price in USD"]}}`
+**User Query:** "What is the conversion rate of Ethereum to EGLD?"
+**Output:** `{{"queries": ["What is current Ethereum token price in USD?", "What is current EGLD token price in USD?"]}}`
 
 #### Example 2:
 **User Query:** "Find the market cap and total supply of Solana."
-**Output:** `{{"queries": ["Solana market capitalization", "Solana total supply"]}}`
+**Output:** `{{"queries": ["What is the current Solana market capitalization?", "What is the current Solana total supply?"]}}`
 
 #### Example 3:
 **User Query:** "What is the weather in New York and the current USD to EUR exchange rate?"
-**Output:** `{{"queries": ["Current weather in New York", "USD to EUR exchange rate"]}}`
+**Output:** `{{"queries": ["What is the Current weather in New York?", "What is the current USD to EUR exchange rate?"]}}`
 
 #### Example 4:
 **User Query:** "Get the latest Tesla stock price and Bitcoin price in USD."
-**Output:** `{{"queries": ["Tesla stock price", "Bitcoin price in USD"]}}`
+**Output:** `{{"queries": ["what is the current Tesla stock price?", "What is the current Bitcoin price in USD?"]}}`
 
 Now, generate and return the output **ONLY** for the following query:
 
@@ -57,4 +57,5 @@ Now, generate and return the output **ONLY** for the following query:
 """
     
     response = llm.invoke(prompt)
+    print(response.content)
     return extract_json_from_string(response.content)
