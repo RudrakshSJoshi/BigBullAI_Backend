@@ -96,15 +96,15 @@ To set up and run this FastAPI application, follow these steps:
 
 ---
 
-### **2. WebSocket Investment Endpoint**
-**Endpoint:** `/inv`
+### **2. WebSocket Investment Endpoint**  
+**Endpoint:** `/inv`  
 
-**Method:** `WebSocket`
+**Method:** `WebSocket`  
 
-**Description:** Establishes a WebSocket connection between the user and server to invest USD into Electronic Gold (EGLD/USDT). Returns High-Frequency Trading (HFT)/Scalping-based responses every 2 seconds.
+**Description:** Establishes a WebSocket connection between the user and server to invest USD into Electronic Gold (EGLD/USDT). Returns High-Frequency Trading (HFT)/Scalping-based responses every 2 seconds.  
 
-**How It Works:**
-1. The client sends initial investment details in JSON format:
+**How It Works:**  
+1. The client sends initial investment details in JSON format:  
    ```json
    {
        "amount": <investment_amount>,
@@ -112,34 +112,45 @@ To set up and run this FastAPI application, follow these steps:
        "loss": <loss_limit>
    }
    ```
-2. The WebSocket continuously returns trading updates every 2 seconds.
-3. The client can send a `"stop"` message to liquidate assets and end the session.
+2. The WebSocket continuously returns trading updates every 2 seconds in JSON format.  
+3. The client can send a `"stop"` message to liquidate assets and end the session.  
 
-**Example Communication Flow:**
-- **Client sends:**
-  ```json
-  {"amount": 1000, "profit": 5, "loss": 2}
-  ```
-- **Server responds every 2 seconds:**
-  ```
-  "EGLD/USDT trade update: Current ROI +2.3%"
-  "EGLD/USDT trade update: Current ROI +4.1%"
-  ```
-- **Client sends:**
-  ```
-  "stop"
-  ```
-- **Server responds:**
-  ```
-  "Stopping Token Investment. Liquidating Assets."
-  ```
 
----
+### **Response Format:**  
+Every 2 seconds, the server sends a JSON response with the following structure:  
+```json
+{
+    "decision": "<buy/sell/hold>",
+    "tkn_val": "<current_token_value>",
+    "immediate_profit": "<profit_from_current_trade>",
+    "accumulated_profit": "<total_profit_since_start>",
+    "net_returns": "<current_total_value_of_investment>"
+}
+```
 
-## Notes
-- The chat endpoint is designed to automatically classify and extract structured information from user queries.
-- The WebSocket endpoint runs real-time trading logic and provides market updates every 2 seconds.
-- CORS is enabled to allow cross-origin requests.
+Termination Response (from frontend):
+```json
+{
+  "decision": "Stopping Token Investment. Liquidating Assets."
+}
+```
+
+For example, if the initial investment was **1000 USD**, a sample response could be:  
+```json
+{
+    "decision": "sell",
+    "tkn_val": "2147.36",
+    "immediate_profit": "0.005",
+    "accumulated_profit": "14.798",
+    "net_returns": "1014.798"
+}
+```
+
+---  
+
+## Notes  
+- The chat endpoint is designed to automatically classify and extract structured information from user queries.  
+- The WebSocket endpoint runs real-time trading logic and provides market updates every 2 seconds.  
+- CORS is enabled to allow cross-origin requests.  
 
 This project is built using FastAPI and leverages AI-driven categorization for investment queries, crypto transactions, and market data retrieval.
-
