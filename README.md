@@ -45,10 +45,10 @@ To set up and run this FastAPI application, follow these steps:
 }
 ```
 
-**Response Format:**
+**Response Format 1:**
 ```json
 {
-    "category": "<category_type>",
+    "category": "investment",
     "amount": <amount>,
     "profit": <profit>,
     "loss": <loss>,
@@ -57,7 +57,7 @@ To set up and run this FastAPI application, follow these steps:
 }
 ```
 
-**Category Types & Their Meanings:**
+**Meanings:**
 - **"investment"** - Indicates an investment-related query, returning amount, profit, loss, and margin types:
   - `profit_margins`:
     - `%` - Profit margin is percentage-based.
@@ -67,7 +67,24 @@ To set up and run this FastAPI application, follow these steps:
     - `%` - Loss margin is percentage-based.
     - `USD` - Loss is in absolute USD value.
     - `NIL` - No loss specified.
-- **"send_cryptos"** - Indicates a deposit or withdrawal of cryptocurrency.
+
+**Response Format 2:**
+```json
+{
+    "category": "send_cryptos"
+}
+```
+
+**Meanings:**
+- **"send_cryptos"** - Indicates a transfer of tokens or NFTs into wallets.
+
+**Response Format 3:**
+```json
+{
+    "category": "web_scrape",
+    "bot_answer": "<answer_to_query>"
+}
+```
 - **"web_scrape"** - Indicates a request for cryptocurrency prices, trends, conversions, or market data.
 
 ---
