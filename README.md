@@ -104,6 +104,30 @@ To set up and run this FastAPI application, follow these steps:
 - **"web_scrape"** - Indicates a request for cryptocurrency prices, trends, conversions, or market data.
 - **"bot_answer"** - Response generated to user's query/queries.
 
+
+**Response Format 4:**
+```json
+{
+    "category": "general",
+    "bot_answer": "<answer_to_query>"
+}
+```
+
+**Meanings:**
+- **"general"** - Indicates a request for general queries, includes guard railing and general information.
+- **"bot_answer"** - Response generated to user's query/queries.
+
+**Response Format 5:**
+```json
+{
+    "category": "personality",
+    "bot_answer": "<answer_to_query>"
+}
+```
+
+**Meanings:**
+- **"personality"** - Indicates a request for the application's/framework's capabilities, developers and agentic systems.
+- **"bot_answer"** - Response generated to user's query/queries.
 ---
 
 ### **2. WebSocket Investment Endpoint**  

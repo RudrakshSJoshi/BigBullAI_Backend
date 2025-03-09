@@ -13,6 +13,7 @@ import threading
 from Tools.token_data_fetcher import fetch_data
 from Agents.crypto_transfer_agent import process_crypto_transfer
 from Tools.memory_context_adder import manage_conversation_memory
+from Agents.personality_agent import get_personality
 
 # Investment logic that continuously updates based on the market
 async def investment_logic(amt, profit, loss, stop_event, websocket):
@@ -107,4 +108,11 @@ async def handle_chat(query):
         res2 = fetch_data(tkn2)
         response = process_crypto_transfer(query, res1, res2)
         response["category"] = category
+    elif category == "general":
+        answer = response.get("bot_answer")
+        # Update conversation memory asynchronously without await
+        threading.Thread(target=manage_conversation_memory, args=(query, answer)).start()
+    elif category == "personality":
+        answer = get_personality(query)
+        response["bot_answer"] = answer
     return response

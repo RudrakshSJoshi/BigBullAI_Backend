@@ -11,11 +11,21 @@ def initiate(query):
    )
    prompt = f"""
 ### Goal:
-Your task is to classify the user's query into one of the following three categories and extract structured information accordingly:
+Your task is to classify the user's query into one of the following five categories and extract structured information accordingly:
 
-1. **Investment** -- When the user mentions investing a specific amount in trading or cryptocurrencies, possibly including profit and loss margins.
+1. **Investment** -- When the user mentions specifically about investing a specific amount in trading or cryptocurrencies, possibly including profit and loss margins.
 2. **Crypto Deposit/Withdrawal** -- When the user talks about transferring tokens into or out of a wallet.
 3. **Web Scraping & Token Conversion** -- When the user seeks token values, trending tokens/NFTs, cryptocurrency-related information, or conversion rates between cryptocurrencies and fiat.
+4. **General Query** -- When the user does not fit into any of the above categories, or it not related the topic of trading, cryptocurrencies, or blockchain, or anything related to it.
+5. **Agent Personality** -- When the user asks about your personality, skills, or capabilities. This category is meant to answer questions that inform people about the AI multi-agent system your current developer is using you on.
+
+### KEY POINTS ABOUT THE FIVE CATEGORIES:
+
+1. **Investment** -- This shall only be called if the user informs about investing some amount, asking about investment strategies or anything not exactly asking to invest doesn't qualify in this category, but rather in web scrape or general.
+2. **Crypto Deposit/Withdrawal** -- When the user talks about transferring, sending or swapping tokens into or out of a wallet.
+3. **Web Scraping & Token Conversion** -- When the user seeks token values, trending tokens/NFTs, cryptocurrency-related information, or conversion rates between cryptocurrencies and fiat, anything that requires the latest data.
+4. **General Query** -- When the user does not fit into any of the above categories, or it not related the topic of trading, cryptocurrencies, or blockchain, or anything related to it. This category is meant to answer general questions while ensuring guard railing against unrelated queries.
+5. **Agent Personality** -- When the user asks about the agent system we have used, wants to know about the developers, features, capabilities or anything related to the agent system.
 
 ### Backstory:
 The user is interacting with an AI system that automates cryptocurrency-related queries. The system needs structured data to determine the appropriate action:
@@ -81,6 +91,42 @@ The user is interacting with an AI system that automates cryptocurrency-related 
   **Output:** `{{"category": "web_scrape"}}`
 - **Input:** "Give me the conversion rate from Dogecoin to BNB."
   **Output:** `{{"category": "web_scrape"}}`
+
+#### 4. General Query:
+```json
+{{"category": "general", "bot_answer": "answer"}}
+```
+**Examples:**
+- **Input:** "What is the capital of France?"
+  **Output:** `{{"category": "general", "bot_answer": "This topic is beyond my scope, please ask questions related to cryptocurrencies."}}`
+- **Input:** "What is a cryptocurrency?"
+  **Output:** `{{"category": "general", "bot_answer": "A cryptocurrency is a digital currency that allows people to exchange value electronically. They are also known as virtual currencies or digital tokens."}}`
+- **Input:** "What is the difference between Bitcoin and Ethereum?"
+  **Output:** `{{"category": "general", "bot_answer": "Bitcoin is a cryptocurrency, while Ethereum is a platform. Bitcoin is a decentralized digital currency, while Ethereum is a blockchain platform."}}`
+- **Input:** "What is a blockchain?"
+  **Output:** `{{"category": "general", "bot_answer": "A blockchain is a distributed ledger that records and verifies transactions in a secure and transparent way."}}`
+- **Input:** "Tell me the difference between a cat and a dog."
+  **Output:** `{{"category": "general", "bot_answer": "This topic is beyond my scope, please ask questions related to cryptocurrencies."}}`
+- **Input:** "Tell me a little bit about scalping, day trading, and swing trading?"
+  **Output:** `{{"category": "general", "bot_answer": "Scalping is a trading strategy where you buy and sell a security at different prices. Day trading involves trading during the day. Swing trading involves trading at different times of the day."}}`
+- **Input:** "Okay, thank you!"
+  **Output:** `{{"category": "general", "bot_answer": "You are welcome!"}}`
+  
+#### 5. Personality
+```json
+{{"category": "personality", "answer": "answer"}}
+```
+**Examples:**
+- **Input:** "What is your name?"
+  **Output:** `{{"category": "personality"}}`  
+- **Input:** "What is your core framework?"
+  **Output:** `{{"category": "personality"}}`
+- **Input:** "Tell me who are your developers."
+  **Output:** `{{"category": "personality"}}`
+- **Input:** "How many agents are incorporated in the framework/application?"
+  **Output:** `{{"category": "personality"}}`
+- **Input:** "What are your capabilities and features?"
+  **Output:** `{{"category": "personality"}}`
 
 ### Output Rule:
 - **Output must be JSON only**, with no additional text.
