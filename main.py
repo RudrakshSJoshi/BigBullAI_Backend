@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import json
 from utils import investment_logic, handle_chat
-from Tools.investment_handler import refine_investment
+from Tools.flush_memory import flush_memory
 
 # Initialize the FastAPI app
 app = FastAPI()
@@ -65,3 +65,8 @@ async def inv(websocket: WebSocket):
 
     finally:
         investment_task.cancel()  # Cancel the running task safely
+
+@app.post("/erase")
+async def erase_data():
+    flush_memory()
+    return {"message": "Memory flushed successfully."}

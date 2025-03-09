@@ -155,7 +155,12 @@ For example, if the initial investment was **1000 USD**, a sample response could
     "net_returns": "1014.798"
 }
 ```
+### **3. Chat Endpoint**
+**Endpoint:** `/erase`
 
+**Method:** `POST`
+
+**Description:** Clears memory of chat history. 
 ---  
 
 ## Notes  

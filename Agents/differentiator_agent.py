@@ -1,8 +1,10 @@
 from Tools.custom_jsonifier import extract_json_from_string
+from Tools.fetch_memory import fetch_memory
 from langchain_groq import ChatGroq
 import os
 
 def initiate(query):
+   query_memory, answer_memory = fetch_memory()
    llm = ChatGroq(
       api_key=os.getenv('GROQ_API_KEY'),
       model="llama-3.1-8b-instant"
@@ -87,6 +89,12 @@ The user is interacting with an AI system that automates cryptocurrency-related 
 Now, classify and extract the relevant data for the following query:
 
 **Query:** "{query}"
+---
+For reference or additional context, you may refer to the following memory (whihc may or may not be relevant):
+Query Memory: {query_memory}
+Answer Memory: {answer_memory}
+---
+Do NOT give much importance to memory as that may reduce the output efficiency and context accuracy, it should only be used if the current query is insufficient in understanding the user's intent.
 """
    response = llm.invoke(prompt)
    return extract_json_from_string(response.content)

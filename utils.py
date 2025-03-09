@@ -12,6 +12,7 @@ from Tools.web_scrape_serp import search_internet
 import threading
 from Tools.token_data_fetcher import fetch_data
 from Agents.crypto_transfer_agent import process_crypto_transfer
+from Tools.memory_context_adder import manage_conversation_memory
 
 # Investment logic that continuously updates based on the market
 async def investment_logic(amt, profit, loss, stop_event, websocket):
@@ -63,18 +64,17 @@ async def investment_logic(amt, profit, loss, stop_event, websocket):
 async def handle_chat(query):
     response = initiate(query)
     category = response.get("category")
+    answer = ""
 
     if category == "web_scrape":
         queries_json = generate_questions(query)
 
-        print("works till now")
         queries = convert_json_to_list(queries_json)  # Convert JSON string to list safely
         
         if not isinstance(queries, list):  # Ensure queries is a list
             raise ValueError("convert_json_to_list did not return a valid list of queries.")
         
         res = [None] * len(queries)  # Pre-allocate list to maintain order
-        print("Also working my man")
         def fetch_results(idx, q):
             try:
                 res[idx] = search_internet(q)  # Store results in correct index
@@ -92,11 +92,14 @@ async def handle_chat(query):
         
         # Ensure `get_answers` returns a valid JSON-compatible value
         bot_answer = get_answers(queries, res, query)
-        print("Works here too")
         if isinstance(bot_answer, dict):  
             response["bot_answer"] = bot_answer  # Store dictionary directly if valid
         else:
             response["bot_answer"] = str(bot_answer)  # Convert to string if needed
+        answer = response.get("bot_answer")
+        # Update conversation memory asynchronously without await
+        threading.Thread(target=manage_conversation_memory, args=(query, answer)).start()
+        
     elif category == "send_cryptos":
         tkn1 = response.get("tkn1")
         tkn2 = response.get("tkn2")
