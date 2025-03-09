@@ -1,98 +1,67 @@
-from Tools.token_value import get_ethereum_price
-from Tools.risk_switch import risk_switcher
-from Tools.final_decision import stop_investment
-from Tools.log_maintain import update_simulation_json
-
-import time
-import threading
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Request
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+import asyncio
 import json
-import os
+from utils import investment_logic, handle_chat
+from Tools.investment_handler import refine_investment
 
+# Initialize the FastAPI app
+app = FastAPI()
 
-def listen_for_stop(flag):
-    """Listens for 'STOP' input without blocking the main loop."""
-    while True:
-        user_input = input().strip()
-        if user_input == "x":
-            flag.append(True)
-            break  # Exit the input thread
-        else:
-            print("Received input:", user_input)
+# Allow all origins using CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
 
-import os
-import json
-import threading
-import time
+@app.post("/chat")
+async def chat(request: Request):
+    try:
+        data = await request.json()
+        query = data.get("query")
+        # Call the custom function with the query
+        response = await handle_chat(query)
+        return response
+    except ValueError as e:
+        # Handle specific error and raise HTTPException with 400 status code (Bad Request)
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        # Handle any other unexpected errors and raise HTTPException with 500 status code (Internal Server Error)
+        raise HTTPException(status_code=500, detail="Internal Server Error: " + str(e))
 
-def loop_with_stop(amt, profit, loss):
-    json_path = "simulation_data.json"
-    log_path = "simulation_log.txt"
+# WebSocket Endpoint: /inv
+@app.websocket("/inv")
+async def inv(websocket: WebSocket):
+    await websocket.accept()
+    
+    try:
+        # Receive the initial investment details from the frontend
+        init_message = await websocket.receive_text()
+        init_data = json.loads(init_message)  # Parse JSON
 
-    # Ensure the JSON file exists and empty it
-    with open(json_path, "w") as json_file:
-        json.dump({}, json_file)  # Empty the file before writing new data
-    print(f"{json_path} emptied and initialized.")
+        amt = init_data.get("amount", 1000)
+        profit = init_data.get("profit", amt * 1.001)
+        loss = init_data.get("loss", amt * 0.999)
 
-    # Ensure the log file exists and empty it
-    with open(log_path, "w") as log_file:
-        log_file.write("Simulation log initialized.\n")  # Empty log before writing
-    print(f"{log_path} emptied and initialized.")
+        print(amt, profit, loss)
+        stop_event = asyncio.Event()
+        investment_task = asyncio.create_task(investment_logic(amt, profit, loss, stop_event, websocket))
 
-    # Define initial JSON data
-    data = {
-        "amount": amt,
-        "held_curr": "liq",
-        "tkn_val": 0,
-        "eth_equivalent": 0,
-        "max_profit": profit,
-        "max_loss": loss
-    }
+        while not stop_event.is_set():
+            message = await websocket.receive_text()
+            if message == "stop":
+                print("Received stop command from client.")
+                await websocket.send_json({"decision": "Stopping Token Investment. Liquidating Assets."})
+                stop_event.set()
+                break
 
-    # Write updated data to JSON
-    with open(json_path, "w") as json_file:
-        json.dump(data, json_file, indent=4)
+    except WebSocketDisconnect:
+        print("Client disconnected from /inv WebSocket")
+        stop_event.set()  # Ensure investment logic stops
 
-    print(f"{json_path} updated successfully.")
-
-    # Append log entry
-    with open(log_path, "a") as log_file:
-        log_file.write("Simulation started.\n")
-
-    print(f"Log updated in {log_path}.")
-
-    stop_flag = []  # Using a list to modify flag inside the thread
-    listener_thread = threading.Thread(target=listen_for_stop, args=(stop_flag,), daemon=True)
-    listener_thread.start()  # Start listening for input in the background
-
-    while True:
-        if stop_flag:  # Check if stop signal was received
-            print("Stop command received. Liquidating investments.")
-            break
-        tkn_val = get_ethereum_price()
-        if stop_flag:  # Check if stop signal was received
-            print("Stop command received. Liquidating investments.")
-            break
-        decision = risk_switcher(tkn_val)
-        if stop_flag:  # Check if stop signal was received
-            print("Stop command received. Liquidating investments.")
-            break
-        update_simulation_json(decision, tkn_val)
-        
-        if stop_investment():
-            break
-        if stop_flag:  # Check if stop signal was received
-            print("Stop command received. Liquidating investments.")
-            break
-        
-        time.sleep(2)
-
-if __name__ == "__main__":
-    # investment_amount = float(input("Enter investment amount: "))
-    # profit_target = float(input("Enter profit target: "))
-    # loss_limit = float(input("Enter loss limit: "))
-
-    investment_amount = 1000
-    profit_target = 1001
-    loss_limit = 999
-
-    loop_with_stop(investment_amount, profit_target, loss_limit)
+    finally:
+        investment_task.cancel()  # Cancel the running task safely

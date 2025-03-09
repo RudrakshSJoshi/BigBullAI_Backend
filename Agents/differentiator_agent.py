@@ -46,15 +46,15 @@ The user is interacting with an AI system that automates cryptocurrency-related 
 
 #### 2. Crypto Deposit/Withdrawal:
 ```json
-{{"category": "send_cryptos"}}
+{{"category": "send_cryptos", "tkn1": "token1", "tkn2": "token2"}}
 ```
 **Examples:**
-- **Input:** "I want to deposit 1 ETH into my wallet."
-  **Output:** `{{"category": "send_cryptos"}}`
-- **Input:** "Can I withdraw 500 USDT from my Binance account?"
-  **Output:** `{{"category": "send_cryptos"}}`
-- **Input:** "Is it possible to transfer Solana from Phantom to MetaMask?"
-  **Output:** `{{"category": "send_cryptos"}}`
+- **Input:** "I want to deposit 1 ETH into my wallet from Solana."
+  **Output:** `{{"category": "send_cryptos", "tkn1": "ETH", "tkn2": "Solana"}}`
+- **Input:** "Can I swap 500 bitcoins from my ethereum account?"
+  **Output:** `{{"category": "send_cryptos", "tkn1": "bitcoin", "tkn2": "ethereum"}}`
+- **Input:** "Is it possible to transfer Sol from Arbitrum?"
+  **Output:** `{{"category": "send_cryptos", "tkn1": "Solana", "tkn2": "Arbitrum"}}`
 
 #### 3. Web Scraping & Token Conversion:
 ```json

@@ -23,7 +23,7 @@ To set up and run this FastAPI application, follow these steps:
    ```
 4. **Run the FastAPI server using Uvicorn:**
    ```sh
-   uvicorn app:app --reload --port 8000 --host 0.0.0.0
+   uvicorn main:app --reload --port 8000 --host 0.0.0.0
    ```
    *(You can change the host and port as needed.)*
 
@@ -75,12 +75,22 @@ To set up and run this FastAPI application, follow these steps:
 **Response Format 2:**
 ```json
 {
-    "category": "send_cryptos"
+    "category": "send_cryptos",
+    "transfer_type": "send/swap",
+    "units": <tokens to swap or send>,
+    "src": <token_id>,
+    "dest": <token_id>,
+    "receiver_id": <receiver_id>,
 }
 ```
 
 **Meanings:**
-- **"send_cryptos"** - Indicates a transfer of tokens or NFTs into wallets.
+- **"send_cryptos"** - Indicates a transfer of tokens or NFTs into wallets
+- **"transfer_type"** - Transfer type: "send" or "swap"
+- **"units"** - Number of tokens to send or swap, "NIL" indicates not mentioned
+- **"src"** - Source token ID, "NIL" indicates not mentioned
+- **"dest"** - Destination token ID, "NIL" indicates not mentioned
+- **"receiver_id"** - Receiver's wallet address, "NIL" indicates not mentioned
 
 **Response Format 3:**
 ```json

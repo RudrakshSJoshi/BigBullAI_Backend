@@ -10,6 +10,8 @@ from Agents.web_scrape_answerer import get_answers
 from Tools.query_json_handler import convert_json_to_list
 from Tools.web_scrape_serp import search_internet
 import threading
+from Tools.token_data_fetcher import fetch_data
+from Agents.crypto_transfer_agent import process_crypto_transfer
 
 # Investment logic that continuously updates based on the market
 async def investment_logic(amt, profit, loss, stop_event, websocket):
@@ -95,5 +97,11 @@ async def handle_chat(query):
             response["bot_answer"] = bot_answer  # Store dictionary directly if valid
         else:
             response["bot_answer"] = str(bot_answer)  # Convert to string if needed
-        
+    elif category == "send_cryptos":
+        tkn1 = response.get("tkn1")
+        tkn2 = response.get("tkn2")
+        res1 = fetch_data(tkn1)
+        res2 = fetch_data(tkn2)
+        response = process_crypto_transfer(query, res1, res2)
+        response["category"] = category
     return response
